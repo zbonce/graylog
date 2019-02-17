@@ -1,8 +1,10 @@
 FROM graylog/graylog:2.5.1-4
+#FROM graylog/graylog:3.0.0
+
+USER root
 
 RUN  apt-get update \
-     && apt-get install -y wget \
-     && rm -rf /var/lib/apt/lists/*
+     && apt-get install -y wget
 
 RUN  cd / && wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz \
      && tar -xf GeoLite2-City.tar.gz   \

@@ -3,10 +3,17 @@ services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
     image: mongo:3
+    environment:
+      - TZ=Asia/Shanghai
+    #volumes:
+    #  - ./mongo_data:/data/db
   # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/5.6/docker.html
   elasticsearch:
-    image: elasticsearch:5.6.3
+    image: elasticsearch:6.5.4
+    volumes:
+      - ./es_data:/usr/share/elasticsearch/data
     environment:
+      - TZ=Asia/Shanghai
       - http.host=0.0.0.0
       - transport.host=localhost
       - network.host=0.0.0.0
@@ -17,19 +24,22 @@ services:
       memlock:
         soft: -1
         hard: -1
-    mem_limit: 1g
+    mem_limit: 2g
   # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
     build: ./graylog-server/
     #image: graylog/graylog:2.4.0-1
     volumes:
+      #配置文件
+      - ./graylog_config:/usr/share/graylog/data/config
       # 持久化数据
-      - ../data/graylog:/usr/share/graylog/data/journal
+      - ./graylog_journal:/usr/share/graylog/data/journal
     environment:
+      - TZ=Asia/Shanghai
       # CHANGE ME!
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
-      # Password: admin
-      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      # Password: admin~666
+      - GRAYLOG_ROOT_PASSWORD_SHA2=fcdbeb256b4ca7fc8932590122b285f81dba62d9901e5c4c8df055b6c2e19409
       - GRAYLOG_WEB_ENDPOINT_URI=http://111.231.92.27:9000/api
       - GRAYLOG_ROOT_TIMEZONE=Asia/Shanghai
       - GRAYLOG_ALLOW_HIGHLIGHTING=true
@@ -50,3 +60,7 @@ services:
       - 5044:5044
       # Beat UDP
       - 5044:5044/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
